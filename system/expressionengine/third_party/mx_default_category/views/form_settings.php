@@ -30,7 +30,8 @@
 		<tr class="<?=print(($i&1) ? "odd" : "even")?>">	
 		<td><strong><?=$channel->channel_title?></strong></td>
 		<td>
-
+			<div>
+				<fieldset class="holder">
 		<?php if(isset($categories[$channel->channel_id])) : ?>	
 		<?php foreach($categories[$channel->channel_id] as $key => $val):?>
 
@@ -44,30 +45,30 @@
 			$first = current($val);
 		}
 		?>
-		
-		<?php if (count($categories[$channel->channel_id]) > 1):?>
-			<?=form_fieldset($key)?>
-		<?php endif;?>
-	
-			<div id="cat_group_container_<?=$first[2]?>" class="cat_group_container">
-		
-				<?php if (is_array($val))
-					foreach($val as $v):?>
-					<label>
-						<?=repeater(NBS.NBS.NBS.NBS, $v[5] - 1)?>
-						<?=form_checkbox($input_prefix.'['.$channel->channel_id.'][' . $v[0] . ']', $v[0], ((isset($settings[$channel->channel_id][$v[0]])) ? TRUE : FALSE )).NBS.NBS.$v[1]?>
-					</label>
+				<?php if (count($categories[$channel->channel_id]) > 1):?>
+					<?=form_fieldset($key)?>
+				<?php endif;?>
+					
+					<div id="cat_group_container_<?=$first[2]?>" class="cat_group_container">
+				
+						<?php if (is_array($val))
+							foreach($val as $v):?>
+							<label>
+								<?=repeater(NBS.NBS.NBS.NBS, $v[5] - 1)?>
+								<?=form_checkbox($input_prefix.'['.$channel->channel_id.'][' . $v[0] . ']', $v[0], ((isset($settings[$channel->channel_id][$v[0]])) ? TRUE : FALSE )).NBS.NBS.$v[1]?>
+							</label>
+						<?php endforeach;?>
+				
+					</div>
+					
+				<?php if (count($categories[$channel->channel_id]) > 1):?>
+					<?=form_fieldset_close()?>
+				<?php endif;?>
+				
 				<?php endforeach;?>
-		
+				<?php endif; ?>
+				</fieldset>
 			</div>
-		
-		<?php if (count($categories[$channel->channel_id]) > 1):?>
-			<?=form_fieldset_close()?>
-		<?php endif;?>
-		
-		<?php endforeach;?>
-		<?php endif; ?>
-
 		</td>
 		</tr>
 
@@ -87,3 +88,12 @@
 <p class="centerSubmit"><input name="edit_field_group_name" value="<?=lang('save_extension_settings')?>" class="submit" type="submit"></p>
 
 <?php echo form_close(); ?>
+
+<style>
+.cat_group_container label {
+	font-weight:		normal;
+	font-size:			13px;
+	display:			block;
+}
+
+</style>

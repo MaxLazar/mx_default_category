@@ -159,38 +159,75 @@ class Mx_default_category_ext {
 				if(isset($this->settings[$channel_id])) {
 
 					foreach($this->settings[$channel_id] as $v => $k) {
-							$json .= $v.',';
+							//$json .= $v.',';
+							//$group .= $v.'|';
 					}
-
+					$json = implode(",", $this->settings[$channel_id]);
+					$group = implode("|", $this->settings[$channel_id]);
 				}
 
+				$this->EE->load->library( 'api' );
+				$this->EE->api->instantiate( 'channel_categories' );
+			
+				$this->EE->api_channel_categories->category_tree( implode("|", $this->settings[$channel_id]) );
 
+				$category_tree = array();
+
+				if ( count( $this->EE->api_channel_categories->categories ) > 0 ) {
+					foreach ( $this->EE->api_channel_categories->categories as $val ) {
+						 if($val[6] != '') {
+							$category_tree[$val[6]][] = $val[0];
+						 }
+					}
+				}
 			}
+
+			$json = trim($json, ',');
+			$out .= 'var mx_default_category = [' . $json. '];';
+			$out .= 'var mx_parents_child = \''.json_encode($category_tree).'\';';
+
+			$out .= '$.each(mx_default_category, function(e){
+						$("input[name=category[]][value=" + mx_default_category[e] + "]").prop("checked", true);	
+					});
+
+					$("#sub_hold_field_category").find("legend").each(function() {
+						var old_ = $(this).html();
+						$(this).html(old_ + \' <input type="checkbox" value="true" class="select_categories">\');
+					});
+					
+			
+					var result = $.parseJSON(mx_parents_child);
+
+					$.each(result, function(k, v) {
+					    $("input[name=category[]][value=" + k + "]").data("children", v).addClass("select_children");
+					});	
+					
+					$("#sub_hold_field_category").on("click", ".select_children", function(e){
+						var status = $(this).prop("checked");
+						var children = $(this).data("children");
+						$.each(children, function(k, v) {
+							$("input[name=category[]][value=" + v + "]").prop("checked", status);		
+						});
+					});
+					
+	
+
+					$(".select_categories").toggle(
+								function(){
+									$(this).parents("fieldset:first").find("input").each(function() {
+										this.checked = true;
+									});
+								}, function (){
+									$(this).parents("fieldset:first").find("input").each(function() {
+										this.checked = false;
+									});
+								}
+				   );
+			';
+
 		}
 
-		$json = trim($json, ',');
-		$out .= 'var mx_default_category = [' . $json. '];';
-		$out .= '$.each(mx_default_category, function(e){
-					$("input[name=category[]][value=" + mx_default_category[e] + "]").prop("checked", true);	
-				});
 
-				$("#sub_hold_field_category").find("legend").each(function() {
-					var old_ = $(this).html();
-					$(this).html(old_ + \' <input type="checkbox" value="true" class="select_categories">\');
-				});
-				
-				$(".select_categories").toggle(
-							function(){
-								$(this).parents("fieldset:first").find("input").each(function() {
-									this.checked = true;
-								});
-							}, function (){
-								$(this).parents("fieldset:first").find("input").each(function() {
-									this.checked = false;
-								});
-							}
-			   );
-';
 
 		$out .= '});';
 
