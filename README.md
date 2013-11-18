@@ -1,0 +1,1 @@
+MX Default Category ext. helps to select default categories for any channels.

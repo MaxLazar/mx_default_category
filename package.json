@@ -1,0 +1,12 @@
+{
+        "schema_version": "1.0",
+        "name" : "mx_default_category",
+        "label": "MX Default Category",
+        "version": "1.0",
+        "types": ["extension"],
+        "paths": {
+                "system": [
+                        "system/expressionengine/third_party/mx_default_category"
+                ]
+        }
+}
